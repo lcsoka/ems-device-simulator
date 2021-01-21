@@ -38,6 +38,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import Simulator from '@/ems/simulator';
+import { ipcRenderer } from 'electron';
 
 @Component
 export default class SideBar extends Vue {
@@ -46,10 +47,11 @@ export default class SideBar extends Vue {
   log = ''
 
   start() {
-    Simulator.getInstance().print(this.addLog);
+    // Simulator.getInstance().print(this.addLog);
+    ipcRenderer.send('start-device', this.serial);
   }
 
-  addLog(content: string){
+  addLog(content: string) {
     this.log = content;
   }
 }

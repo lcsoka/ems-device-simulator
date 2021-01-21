@@ -1,3 +1,5 @@
+import WebServer from '@/ems/web-server';
+
 export default class Simulator {
   private static instance: Simulator;
 
@@ -12,6 +14,16 @@ export default class Simulator {
   }
 
   public print(callback: (content: string) => void) {
+    this.generateLog();
+    callback(this.log);
+
+    setInterval(() => {
+      this.generateLog();
+      callback(this.log);
+    }, 1000);
+  }
+
+  private generateLog() {
     const d = new Date();
     const hr = d.getHours() < 10 ? `0${d.getHours()}` : d.getHours();
     const min = d.getMinutes() < 10 ? `0${d.getMinutes()}` : d.getMinutes();
@@ -21,6 +33,5 @@ export default class Simulator {
 
     str += '\n';
     this.log += str;
-    callback(this.log);
   }
 }
