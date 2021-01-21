@@ -2,12 +2,8 @@ import { app, BrowserWindow, ipcMain, protocol, } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 import WebServer from '@/ems/web-server';
-
-// In main process.
-ipcMain.on('start-device', (event, serial) => {
-  const server = WebServer.getInstance();
-  server.start(serial);
-});
+import WebsocketServer from '@/ems/websocket-server';
+import { Socket, Transport } from 'electron-ipc-socket';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -29,10 +25,22 @@ async function createWindow() {
     },
   });
 
+  const socket = new Socket(new Transport(ipcMain, win as any));
+  socket.open('main-win');
+
+  socket.onEvent('start-device', (event) => {
+    const serial = event.data;
+    const server = WebServer.getInstance();
+    const websocket = WebsocketServer.getInstance();
+    server.start(serial);
+    websocket.start(socket);
+    socket.send('waiting-connection');
+  });
+
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string);
-    if (!process.env.IS_TEST) win.webContents.openDevTools();
+    // if (!process.env.IS_TEST) win.webContents.openDevTools();
   } else {
     createProtocol('app');
     // Load the index.html when not in development

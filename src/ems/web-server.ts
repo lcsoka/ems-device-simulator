@@ -24,6 +24,10 @@ export default class WebServer {
     return WebServer.instance;
   }
 
+  public getServer() {
+    return this.server;
+  }
+
   public getDevice() {
     return this.device;
   }

@@ -14,11 +14,12 @@
       </div>
       <div>
         <div class="w-full inline-flex rounded-md shadow">
-          <a href="#" class="w-full inline-flex items-center justify-center px-2 py-2 border
+          <button class="w-full inline-flex items-center justify-center px-2 py-2 border
          border-transparent text-base font-medium rounded-md text-white
-         bg-green-500 hover:bg-green-600" v-on:click="start()">
+         bg-green-500 hover:bg-green-600 disabled:opacity-50" v-on:click="start()"
+                  :disabled="!canConnect">
             Start
-          </a>
+          </button>
         </div>
       </div>
     </div>
@@ -37,8 +38,9 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import Simulator from '@/ems/simulator';
 import { ipcRenderer } from 'electron';
+import { Socket } from 'electron-ipc-socket';
+import Simulator from '@/ems/simulator';
 
 @Component
 export default class SideBar extends Vue {
@@ -46,9 +48,33 @@ export default class SideBar extends Vue {
 
   log = ''
 
+  canConnect = true;
+
+  socket = new Socket(ipcRenderer);
+
+  constructor() {
+    super();
+
+    this.socket.open('main-win');
+
+    this.socket.onEvent('websocket-message', (event) => {
+      Simulator.getInstance().print(event.data, this.addLog);
+    });
+
+    this.socket.onEvent('websocket-disconnect', (event) => {
+      this.enableButton();
+    });
+  }
+
+  enableButton() {
+    this.canConnect = true;
+  }
+
   start() {
     // Simulator.getInstance().print(this.addLog);
-    ipcRenderer.send('start-device', this.serial);
+    // ipcRenderer.send('start-device', this.serial);
+    this.socket.send('start-device', this.serial);
+    this.canConnect = false;
   }
 
   addLog(content: string) {
@@ -60,5 +86,6 @@ export default class SideBar extends Vue {
 <style scoped>
 textarea {
   resize: none;
+  font-size: 14px;
 }
 </style>

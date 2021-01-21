@@ -13,23 +13,18 @@ export default class Simulator {
     return Simulator.instance;
   }
 
-  public print(callback: (content: string) => void) {
-    this.generateLog();
+  public print(message: string, callback: (content: string) => void) {
+    this.addMessage(message);
     callback(this.log);
-
-    setInterval(() => {
-      this.generateLog();
-      callback(this.log);
-    }, 1000);
   }
 
-  private generateLog() {
+  private addMessage(message: string) {
     const d = new Date();
     const hr = d.getHours() < 10 ? `0${d.getHours()}` : d.getHours();
     const min = d.getMinutes() < 10 ? `0${d.getMinutes()}` : d.getMinutes();
     const sec = d.getSeconds() < 10 ? `0${d.getSeconds()}` : d.getSeconds();
 
-    let str = `${hr}:${min}:${sec} - TEST`;
+    let str = `${hr}:${min}:${sec} - ${message}`;
 
     str += '\n';
     this.log += str;
