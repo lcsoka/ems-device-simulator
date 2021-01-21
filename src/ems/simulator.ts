@@ -27,6 +27,6 @@ export default class Simulator {
     let str = `${hr}:${min}:${sec} - ${message}`;
 
     str += '\n';
-    this.log += str;
+    this.log = str + this.log;
   }
 }

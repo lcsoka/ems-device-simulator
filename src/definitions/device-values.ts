@@ -1,4 +1,3 @@
-import { ChannelData } from '@/definitions/channel-data';
 import { Channels } from '@/definitions/channels';
 
 export interface DeviceValues {
@@ -6,4 +5,5 @@ export interface DeviceValues {
   time: number;
   pause: number;
   channels: Channels;
+  battery: number;
 }

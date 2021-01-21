@@ -35,7 +35,7 @@ export default class WebsocketServer {
     this.ws.on('connection', (ws: WebSocket, socket: WebSocket, request: http.IncomingMessage) => {
       this.addLog('Client connected. ✅');
       WebServer.getInstance().getDevice().connect();
-      this.ipc.send('websocket-connect', WebServer.getInstance().getDevice().toJSON());
+      this.ipc.send('websocket-connect', WebServer.getInstance().getDevice().getValues());
 
       ws.on('message', (message: string) => {
         const components = message.split(' ');
@@ -89,12 +89,16 @@ export default class WebsocketServer {
               const battery = device.getBattery();
               this.addLog(`Getting battery percentage. (${battery}%)`);
               ws.send(`${DeviceMessage.GetBattery} ${battery}`);
+              // Send device values to the UI
+              this.ipc.send('device-values', device.getValues());
               return;
           }
         }
         // Reply with same message
         ws.send(message);
-        // this.addLog(message);
+
+        // Send device values to the UI
+        this.ipc.send('device-values', device.getValues());
       });
 
       ws.on('close', () => {

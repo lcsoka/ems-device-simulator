@@ -22,6 +22,7 @@ export default class Device {
       time: 0,
       pause: 0,
       channels: getDefaultConfig(),
+      battery: this.battery,
     };
     this.hasImpulse = false;
     this.start();
