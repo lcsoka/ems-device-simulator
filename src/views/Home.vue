@@ -45,7 +45,8 @@ export default class Home extends Vue {
       this.refreshStatus(true, false);
     });
 
-    this.socket.onEvent('websocket-connect', () => {
+    this.socket.onEvent('websocket-connect', (data) => {
+      console.log(data);
       this.refreshStatus(false, true);
     });
 
