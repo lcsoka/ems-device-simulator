@@ -4,6 +4,7 @@ import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 import WebServer from '@/ems/web-server';
 import WebsocketServer from '@/ems/websocket-server';
 import { Socket, Transport } from 'electron-ipc-socket';
+import MdnsService from '@/ems/mdns-service';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -32,8 +33,10 @@ async function createWindow() {
     const serial = event.data;
     const server = WebServer.getInstance();
     const websocket = WebsocketServer.getInstance();
+    const mdnsService = MdnsService.getInstance();
     server.start(serial);
     websocket.start(socket);
+    mdnsService.start();
     socket.send('waiting-connection');
   });
 
