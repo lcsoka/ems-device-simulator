@@ -7,6 +7,7 @@ describe('WebSocket Server', () => {
   let webServer: WebServer;
   let websocketServer: WebsocketServer;
   let client: WebSocket;
+  let port = 80;
   const fakeIpcSocket = {
     send: (event: string, payload?: any) => {
     },
@@ -17,11 +18,11 @@ describe('WebSocket Server', () => {
     webServer = WebServer.getInstance();
     webServer.start('1234');
     websocketServer = WebsocketServer.getInstance();
-    websocketServer.start(fakeIpcSocket as any);
+    websocketServer.start(fakeIpcSocket as any, port);
   });
 
   beforeEach('should start websocket and wait for connections', (done) => {
-    client = new WebSocket('ws://localhost:80/ws');
+    client = new WebSocket(`ws://localhost:${port}/ws`);
     client.on('open', () => {
       connected = true;
       done();

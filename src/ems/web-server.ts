@@ -41,7 +41,7 @@ export default class WebServer {
 
     // Start listening
     this.server = this.app.listen(this.port, () => {
-      // console.info(`Express server is listening on port: ${this.port}`);
+      console.info(`Express server is listening on port: ${this.port}`);
       this.device = new Device(serial);
     });
 

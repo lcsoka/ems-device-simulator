@@ -18,7 +18,7 @@ export default class WebsocketServer {
     return WebsocketServer.instance;
   }
 
-  public start(ipcSocket: Socket) {
+  public start(ipcSocket: Socket, port?: number) {
     if (this.ws) {
       return;
     }
@@ -26,12 +26,17 @@ export default class WebsocketServer {
     // Store ipc socket to be able to send messages with it later
     this.ipc = ipcSocket;
 
-    // Create Websocket server and attach it to our Web Server
-    this.ws = new WebSocket.Server({
+    let config = {
       server: WebServer.getInstance().getServer(),
-      port: 80,
       path: '/ws',
-    });
+    };
+
+    if (port) {
+      config = Object.assign(config, {port});
+    }
+
+    // Create Websocket server and attach it to our Web Server
+    this.ws = new WebSocket.Server(config);
     this.ws.on('connection', (ws: WebSocket, socket: WebSocket, request: http.IncomingMessage) => {
       this.addLog('Client connected. ✅');
       WebServer.getInstance().getDevice().connect();
