@@ -1,5 +1,5 @@
-import { Channels } from '@/definitions/channels';
-import { channelMap } from '@/utils/channel-map';
+import { Channels } from '../definitions/channels';
+import { channelMap } from './channel-map';
 
 export default function getDefaultConfig() {
   const channels: Channels = {};

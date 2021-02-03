@@ -1,6 +1,6 @@
 import express from 'express';
 import http from 'http';
-import Device from '@/ems/device';
+import Device from './device';
 
 export default class WebServer {
   private static instance: WebServer;
@@ -41,7 +41,7 @@ export default class WebServer {
 
     // Start listening
     this.server = this.app.listen(this.port, () => {
-      console.log(`Express server is listening on port: ${this.port}`);
+      // console.info(`Express server is listening on port: ${this.port}`);
       this.device = new Device(serial);
     });
 
@@ -51,7 +51,6 @@ export default class WebServer {
 
   public static status(req: any, res: any) {
     const response = WebServer.getInstance().getDevice().toJSON();
-
-    res.status(200).send(JSON.stringify(response));
+    res.status(200).send(response);
   }
 }

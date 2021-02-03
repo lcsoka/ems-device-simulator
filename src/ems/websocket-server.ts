@@ -1,8 +1,8 @@
 import WebSocket from 'ws';
 import { Socket } from 'electron-ipc-socket';
-import WebServer from '@/ems/web-server';
 import * as http from 'http';
-import { DeviceMessage } from '@/definitions/device-message';
+import WebServer from './web-server';
+import { DeviceMessage } from '../definitions/device-message';
 
 export default class WebsocketServer {
   private static instance: WebsocketServer;
@@ -29,9 +29,9 @@ export default class WebsocketServer {
     // Create Websocket server and attach it to our Web Server
     this.ws = new WebSocket.Server({
       server: WebServer.getInstance().getServer(),
+      port: 80,
       path: '/ws',
     });
-
     this.ws.on('connection', (ws: WebSocket, socket: WebSocket, request: http.IncomingMessage) => {
       this.addLog('Client connected. ✅');
       WebServer.getInstance().getDevice().connect();
@@ -46,54 +46,56 @@ export default class WebsocketServer {
 
         if (!messageFormat.test(message)) {
           this.addLog(`Invalid message. (${message})`);
-        } else {
-          const messageType = parseInt(components[0], 10);
-          // eslint-disable-next-line default-case
-          switch (messageType as DeviceMessage) {
-            case DeviceMessage.SetMasterValue:
-              // eslint-disable-next-line no-case-declarations
-              const masterValue = parseInt(components[1], 10);
-              device.setMaster(masterValue);
-              this.addLog(`Setting master value: ${masterValue} 💪`);
-              break;
-            case DeviceMessage.SetChannelValue:
-              // eslint-disable-next-line no-case-declarations
-              const channel = parseInt(components[1], 10);
-              // eslint-disable-next-line no-case-declarations
-              const channelValue = parseInt(components[2], 10);
-              device.setChannelValue(channel, channelValue);
-              this.addLog(`Setting channel ${channel} value: ${channelValue}`);
-              break;
-            case DeviceMessage.ImpulseOn:
-              device.onIon();
-              this.addLog('Turn ON impulse ⚡️');
-              break;
-            case DeviceMessage.ImpulseOff:
-              device.onIoff();
-              this.addLog('Turn OFF impulse ⚡');
-              break;
-            case DeviceMessage.SetImpulseTime:
-              // eslint-disable-next-line no-case-declarations
-              const time = parseInt(components[1], 10);
-              device.setTime(time);
-              this.addLog(`Set impulse time to ${time} seconds. ▶️`);
-              break;
-            case DeviceMessage.SetImpulsePause:
-              // eslint-disable-next-line no-case-declarations
-              const pause = parseInt(components[1], 10);
-              device.setPause(pause);
-              this.addLog(`Set impulse pause to ${pause} seconds. ⏸️`);
-              break;
-            case DeviceMessage.GetBattery:
-              // eslint-disable-next-line no-case-declarations
-              const battery = device.getBattery();
-              this.addLog(`Getting battery percentage. (${battery}%)`);
-              ws.send(`${DeviceMessage.GetBattery} ${battery}`);
-              // Send device values to the UI
-              this.ipc.send('device-values', device.getValues());
-              return;
-          }
+          return;
         }
+
+        const messageType = parseInt(components[0], 10);
+        // eslint-disable-next-line default-case
+        switch (messageType as DeviceMessage) {
+          case DeviceMessage.SetMasterValue:
+            // eslint-disable-next-line no-case-declarations
+            const masterValue = parseInt(components[1], 10);
+            device.setMaster(masterValue);
+            this.addLog(`Setting master value: ${masterValue} 💪`);
+            break;
+          case DeviceMessage.SetChannelValue:
+            // eslint-disable-next-line no-case-declarations
+            const channel = parseInt(components[1], 10);
+            // eslint-disable-next-line no-case-declarations
+            const channelValue = parseInt(components[2], 10);
+            device.setChannelValue(channel, channelValue);
+            this.addLog(`Setting channel ${channel} value: ${channelValue}`);
+            break;
+          case DeviceMessage.ImpulseOn:
+            device.onIon();
+            this.addLog('Turn ON impulse ⚡️');
+            break;
+          case DeviceMessage.ImpulseOff:
+            device.onIoff();
+            this.addLog('Turn OFF impulse ⚡');
+            break;
+          case DeviceMessage.SetImpulseTime:
+            // eslint-disable-next-line no-case-declarations
+            const time = parseInt(components[1], 10);
+            device.setTime(time);
+            this.addLog(`Set impulse time to ${time} seconds. ▶️`);
+            break;
+          case DeviceMessage.SetImpulsePause:
+            // eslint-disable-next-line no-case-declarations
+            const pause = parseInt(components[1], 10);
+            device.setPause(pause);
+            this.addLog(`Set impulse pause to ${pause} seconds. ⏸️`);
+            break;
+          case DeviceMessage.GetBattery:
+            // eslint-disable-next-line no-case-declarations
+            const battery = device.getBattery();
+            this.addLog(`Getting battery percentage. (${battery}%)`);
+            ws.send(`${DeviceMessage.GetBattery} ${battery}`);
+            // Send device values to the UI
+            this.ipc.send('device-values', device.getValues());
+            return;
+        }
+
         // Reply with same message
         ws.send(message);
 

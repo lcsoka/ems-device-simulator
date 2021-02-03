@@ -1,5 +1,3 @@
-import WebServer from '@/ems/web-server';
-
 export default class Simulator {
   private static instance: Simulator;
 

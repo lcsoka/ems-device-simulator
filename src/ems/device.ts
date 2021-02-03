@@ -1,5 +1,5 @@
-import { DeviceValues } from '@/definitions/device-values';
-import getDefaultConfig from '@/utils/default-config';
+import { DeviceValues } from '../definitions/device-values';
+import getDefaultConfig from '../utils/default-config';
 
 export default class Device {
   private battery = 100;
@@ -72,9 +72,11 @@ export default class Device {
   }
 
   public setChannelValue(channel: number, value: number) {
-    // if (this.deviceValues?.channels[channel]?.value !== undefined) {
-      this.deviceValues.channels[channel].value = value;
-    // }
+    if (channel in this.deviceValues.channels) {
+      // Don't let to set invalid values (only between 0 and 100)
+      const correctedValue = Math.min(Math.max(0, value), 100);
+      this.deviceValues.channels[channel].value = correctedValue;
+    }
   }
 
   public setTime(value: number) {

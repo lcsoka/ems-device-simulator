@@ -1,4 +1,4 @@
-import { Channels } from '@/definitions/channels';
+import { Channels } from './channels';
 
 export interface DeviceValues {
   master: number;

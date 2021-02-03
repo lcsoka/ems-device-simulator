@@ -47,7 +47,6 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import HelloWorld from '@/components/HelloWorld.vue';
 import SideBar from '@/components/SideBar.vue';
 import { Socket } from 'electron-ipc-socket';
 import { ipcRenderer } from 'electron';
@@ -56,7 +55,6 @@ import { DeviceValues } from '@/definitions/device-values';
 @Component({
   components: {
     SideBar,
-    HelloWorld,
   },
 })
 export default class Home extends Vue {
