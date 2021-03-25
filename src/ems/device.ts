@@ -79,6 +79,14 @@ export default class Device {
     }
   }
 
+  public setChannelFreq(channel: number, freq: number) {
+    if (channel in this.deviceValues.channels) {
+      // Don't let to set invalid values (only between 0 and 100)
+      const correctedValue = Math.min(Math.max(0, freq), 100);
+      this.deviceValues.channels[channel].freq = correctedValue;
+    }
+  }
+
   public setTime(value: number) {
     this.deviceValues.time = value;
   }

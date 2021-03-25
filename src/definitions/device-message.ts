@@ -2,6 +2,7 @@
 export enum DeviceMessage {
   SetMasterValue,
   SetChannelValue,
+  SetChannelFreq,
   ImpulseOn,
   ImpulseOff,
   SetImpulseTime,

@@ -10,6 +10,7 @@ export default function getDefaultConfig() {
     channels[i].id = i;
     channels[i].name = channelMap[i];
     channels[i].value = 0;
+    channels[i].freq = 0;
   }
   return channels;
 }

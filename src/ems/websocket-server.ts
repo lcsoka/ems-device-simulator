@@ -63,13 +63,21 @@ export default class WebsocketServer {
             device.setMaster(masterValue);
             this.addLog(`Setting master value: ${masterValue} 💪`);
             break;
-          case DeviceMessage.SetChannelValue:
+            case DeviceMessage.SetChannelValue:
+              // eslint-disable-next-line no-case-declarations
+              const channel = parseInt(components[1], 10);
+              // eslint-disable-next-line no-case-declarations
+              const channelValue = parseInt(components[2], 10);
+              device.setChannelValue(channel, channelValue);
+              this.addLog(`Setting channel ${channel} value: ${channelValue}`);
+              break;
+          case DeviceMessage.SetChannelFreq:
             // eslint-disable-next-line no-case-declarations
-            const channel = parseInt(components[1], 10);
+            const ch = parseInt(components[1], 10);
             // eslint-disable-next-line no-case-declarations
-            const channelValue = parseInt(components[2], 10);
-            device.setChannelValue(channel, channelValue);
-            this.addLog(`Setting channel ${channel} value: ${channelValue}`);
+            const freq = parseInt(components[2], 10);
+            device.setChannelFreq(ch, freq);
+            this.addLog(`Setting channel ${ch} freq: ${freq}`);
             break;
           case DeviceMessage.ImpulseOn:
             device.onIon();
