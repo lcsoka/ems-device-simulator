@@ -27,25 +27,31 @@ export default class WebsocketServer {
     this.ipc = ipcSocket;
 
     let config = {
-      server: WebServer.getInstance().getServer(),
+      server: WebServer.getInstance()
+        .getServer(),
       path: '/ws',
     };
 
     if (port) {
-      config = Object.assign(config, {port});
+      config = Object.assign(config, { port });
     }
 
     // Create Websocket server and attach it to our Web Server
     this.ws = new WebSocket.Server(config);
     this.ws.on('connection', (ws: WebSocket, socket: WebSocket, request: http.IncomingMessage) => {
       this.addLog('Client connected. ✅');
-      WebServer.getInstance().getDevice().connect();
-      this.ipc.send('websocket-connect', WebServer.getInstance().getDevice().getValues());
+      WebServer.getInstance()
+        .getDevice()
+        .connect();
+      this.ipc.send('websocket-connect', WebServer.getInstance()
+        .getDevice()
+        .getValues());
 
       ws.on('message', (message: string) => {
         const components = message.split(' ');
 
-        const device = WebServer.getInstance().getDevice();
+        const device = WebServer.getInstance()
+          .getDevice();
 
         const messageFormat = /(\d |\d)+/;
 
@@ -63,14 +69,14 @@ export default class WebsocketServer {
             device.setMaster(masterValue);
             this.addLog(`Setting master value: ${masterValue} 💪`);
             break;
-            case DeviceMessage.SetChannelValue:
-              // eslint-disable-next-line no-case-declarations
-              const channel = parseInt(components[1], 10);
-              // eslint-disable-next-line no-case-declarations
-              const channelValue = parseInt(components[2], 10);
-              device.setChannelValue(channel, channelValue);
-              this.addLog(`Setting channel ${channel} value: ${channelValue}`);
-              break;
+          case DeviceMessage.SetChannelValue:
+            // eslint-disable-next-line no-case-declarations
+            const channel = parseInt(components[1], 10);
+            // eslint-disable-next-line no-case-declarations
+            const channelValue = parseInt(components[2], 10);
+            device.setChannelValue(channel, channelValue);
+            this.addLog(`Setting channel ${channel} value: ${channelValue}`);
+            break;
           case DeviceMessage.SetChannelFreq:
             // eslint-disable-next-line no-case-declarations
             const ch = parseInt(components[1], 10);
@@ -118,10 +124,22 @@ export default class WebsocketServer {
 
       ws.on('close', () => {
         this.addLog('Client disconnected. ❌');
-        WebServer.getInstance().getDevice().disconnect();
+        WebServer.getInstance()
+          .getDevice()
+          .disconnect();
         this.ipc.send('websocket-disconnect');
       });
     });
+  }
+
+  public stop() {
+    if(this.ws.clients.size == 0) {
+      this.ipc.send('websocket-disconnect');
+    }
+
+    for (const client of this.ws.clients) {
+      client.close();
+    }
   }
 
   private addLog(message: string) {

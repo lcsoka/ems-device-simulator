@@ -26,6 +26,8 @@ async function createWindow() {
     },
   });
 
+
+
   const socket = new Socket(new Transport(ipcMain, win as any));
   socket.open('main-win');
 
@@ -38,6 +40,14 @@ async function createWindow() {
     websocket.start(socket);
     mdnsService.start();
     socket.send('waiting-connection');
+  });
+
+  socket.onEvent('stop-device', (event) => {
+    const server = WebServer.getInstance();
+    const websocket = WebsocketServer.getInstance();
+    const mdnsService = MdnsService.getInstance();
+    mdnsService.stop();
+    websocket.stop()
   });
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {

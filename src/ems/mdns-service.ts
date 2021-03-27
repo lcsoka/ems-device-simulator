@@ -8,9 +8,6 @@ export default class MdnsService {
   private started = false;
 
   constructor() {
-    this.advertisement = MDNS.createAdvertisement(MDNS.tcp('http'), 80, {
-      name: 'EMS_Device',
-    });
   }
 
   public static getInstance() {
@@ -24,11 +21,16 @@ export default class MdnsService {
     if (this.started) {
       return;
     }
+    this.advertisement = MDNS.createAdvertisement(MDNS.tcp('http'), 80, {
+      name: 'EMS_Device',
+    });
+    this.advertisement.start();
+    this.started = true;
+  }
 
-    if (this.advertisement) {
-      this.advertisement.start();
-      this.started = true;
-    }
+  public stop() {
+    this.advertisement.stop();
+    this.started = false;
   }
 
 }

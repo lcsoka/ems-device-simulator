@@ -8,17 +8,26 @@
                  class="bg-gray-600 focus:ring-green-500 focus:border-green-500 block w-full pl-2
                pr-2 sm:text-sm border-gray-600 rounded-md mb-2"
                  placeholder="abc123"
+                 :disabled="!canConnect"
                  v-bind:value="serial"
                  v-on:input="serial = $event.target.value"/>
         </div>
       </div>
       <div>
-        <div class="w-full inline-flex rounded-md shadow">
+        <div class="inline-flex rounded-md shadow" v-bind:class="{'w-full':!started,
+         'w-1/2':started, 'pr-1':started}">
           <button class="w-full inline-flex items-center justify-center px-2 py-2 border
          border-transparent text-base font-medium rounded-md text-white
          bg-green-500 hover:bg-green-600 disabled:opacity-50" v-on:click="start()"
                   :disabled="!canConnect">
             Start
+          </button>
+        </div>
+        <div class="w-1/2 pl-1 inline-flex rounded-md shadow" v-if="started">
+          <button class="w-full inline-flex items-center justify-center px-2 py-2 border
+         border-transparent text-base font-medium rounded-md text-white
+         bg-green-500 hover:bg-green-600 disabled:opacity-50" v-on:click="stop()">
+            Stop
           </button>
         </div>
       </div>
@@ -48,6 +57,8 @@ export default class SideBar extends Vue {
 
   log = ''
 
+  started = false;
+
   canConnect = true;
 
   socket = new Socket(ipcRenderer);
@@ -75,6 +86,12 @@ export default class SideBar extends Vue {
     // ipcRenderer.send('start-device', this.serial);
     this.socket.send('start-device', this.serial);
     this.canConnect = false;
+    this.started = true;
+  }
+
+  stop() {
+    this.started = false;
+    this.socket.send('stop-device');
   }
 
   addLog(content: string) {
