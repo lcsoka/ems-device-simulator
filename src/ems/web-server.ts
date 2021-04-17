@@ -8,7 +8,7 @@ import {
 export default class WebServer {
   private static instance: WebServer;
 
-  private app: express.Application | null;
+  private app!: express.Application | null;
 
   private port = 80;
 

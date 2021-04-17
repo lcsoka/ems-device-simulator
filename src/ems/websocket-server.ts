@@ -4,12 +4,14 @@ import * as http from 'http';
 import WebServer from './web-server';
 import { DeviceMessage } from '../definitions/device-message';
 
-export default class WebsocketServer {
+export default class WebsocketServer implements DeviceImpulseHandler {
   private static instance: WebsocketServer;
 
   private ws!: WebSocket.Server;
 
   private ipc!: Socket;
+
+  private connectedClient!: WebSocket;
 
   public static getInstance() {
     if (!WebsocketServer.instance) {
@@ -37,12 +39,16 @@ export default class WebsocketServer {
     }
 
     // Create Websocket server and attach it to our Web Server
+    // @ts-ignore
     this.ws = new WebSocket.Server(config);
     this.ws.on('connection', (ws: WebSocket, socket: WebSocket, request: http.IncomingMessage) => {
       this.addLog('Client connected. ✅');
-      WebServer.getInstance()
-        .getDevice()
-        .connect();
+      const device = WebServer.getInstance()
+        .getDevice();
+      device.connect();
+      device.setImpulseHandler(this);
+      this.connectedClient = ws;
+
       this.ipc.send('websocket-connect', WebServer.getInstance()
         .getDevice()
         .getValues());
@@ -133,7 +139,7 @@ export default class WebsocketServer {
   }
 
   public stop() {
-    if(this.ws.clients.size == 0) {
+    if (this.ws.clients.size == 0) {
       this.ipc.send('websocket-disconnect');
     }
 
@@ -144,5 +150,15 @@ export default class WebsocketServer {
 
   private addLog(message: string) {
     this.ipc.send('websocket-message', message);
+  }
+
+  sendImpulseOn() {
+    this.connectedClient.send(`${DeviceMessage.ImpulseOn}`);
+    this.ipc.send('websocket-message', 'Sending Impulse ON to the client.');
+  }
+
+  sendImpulseOff() {
+    this.connectedClient.send(`${DeviceMessage.ImpulseOff}`);
+    this.ipc.send('websocket-message', 'Sending Impulse OFF to the client.');
   }
 }

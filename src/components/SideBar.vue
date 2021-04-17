@@ -73,7 +73,7 @@ export default class SideBar extends Vue {
     });
 
     this.socket.onEvent('websocket-disconnect', (event) => {
-      this.enableButton();
+      // this.enableButton();
     });
   }
 
@@ -91,6 +91,7 @@ export default class SideBar extends Vue {
 
   stop() {
     this.started = false;
+    this.canConnect = true;
     this.socket.send('stop-device');
   }
 

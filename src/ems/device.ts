@@ -1,3 +1,5 @@
+import { DeviceMessage } from '@/definitions/device-message';
+import WebSocket from 'ws';
 import { DeviceValues } from '../definitions/device-values';
 import getDefaultConfig from '../utils/default-config';
 
@@ -15,6 +17,10 @@ export default class Device {
   private deviceValues: DeviceValues;
 
   private hasImpulse = false;
+
+  private impulseTicker!: NodeJS.Timeout;
+
+  private impulseHandler: DeviceImpulseHandler;
 
   constructor(private serial: string) {
     this.deviceValues = {
@@ -97,9 +103,43 @@ export default class Device {
 
   public onIon() {
     this.hasImpulse = true;
+    this.startImpulseOn();
   }
 
   public onIoff() {
     this.hasImpulse = false;
+    if(this.impulseTicker) {
+      clearTimeout(this.impulseTicker);
+    }
+  }
+
+  public setImpulseHandler(handler: DeviceImpulseHandler) {
+    this.impulseHandler = handler;
+  }
+
+  private startImpulseOn() {
+    if(this.impulseTicker) {
+      clearTimeout(this.impulseTicker);
+    }
+    if(this.hasImpulse) {
+      this.impulseTicker = setTimeout(()=>{
+        // Send ioff message to the app, start ioff timer
+        this.impulseHandler.sendImpulseOff();
+        this.startImpulseOff();
+      },this.deviceValues.time * 1000);
+    }
+  }
+
+  private startImpulseOff() {
+    if(this.impulseTicker) {
+      clearTimeout(this.impulseTicker);
+    }
+    if(this.hasImpulse) {
+      this.impulseTicker = setTimeout(()=>{
+        // Send ion message to the app, start ion timer
+        this.impulseHandler.sendImpulseOn();
+        this.startImpulseOn();
+      },this.deviceValues.pause * 1000);
+    }
   }
 }

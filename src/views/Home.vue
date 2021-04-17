@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col-reverse sm:flex-row flex-grow">
     <div class="sm:w-7/12 p-2 h-full">
-      <div class=" bg-gray-700  rounded h-full">
+      <div class=" bg-gray-700  rounded h-full overflow-y-auto">
         <div v-if="!waiting" class="h-full">
           <div v-if="!connected" class="h-full flex items-center justify-center">
             Enter the device serial and press Start.
@@ -17,16 +17,34 @@
             </div>
             <div class="channels flex flex-wrap">
               <div class="p-2 w-1/2 " v-for="channel in deviceValues.channels" :key="channel.id">
-                <div class="bg-gray-600 rounded p-2">
-                  <div class="flex justify-between">
-                    <div class="name">{{ channel.name }}</div>
-                    <div class="value">{{ channel.value }}%</div>
+                <div class="bg-gray-600 rounded ">
+                  <div class="px-2 py-1 bg-gray-500 rounded border-b border-gray-500">
+                  <span class="font-bold uppercase text-sm">{{ channel.name }}</span>
                   </div>
-                  <div class="relative pt-1">
-                    <div class="overflow-hidden h-2 text-xs flex rounded bg-green-200">
-                      <div v-bind:style="{width:channel.value+'%'}"
-                           class="transition-all duration-500 shadow-none flex flex-col text-center
-                            whitespace-nowrap text-white justify-center bg-green-500"></div>
+                  <div class="p-2 border-b border-gray-500">
+                    <div class="flex justify-between">
+                      <div class="name text-xs">Strength</div>
+                      <div class="value text-xs">{{ channel.value }}%</div>
+                    </div>
+                    <div class="relative pt-1">
+                      <div class="overflow-hidden h-1 text-xs flex rounded bg-green-200">
+                        <div v-bind:style="{width:channel.value+'%'}"
+                            class="transition-all duration-500 shadow-none flex flex-col text-center
+                              whitespace-nowrap text-white justify-center bg-green-500"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="p-2">
+                    <div class="flex justify-between">
+                      <div class="name text-xs">Freq</div>
+                      <div class="value text-xs">{{ channel.freq }}%</div>
+                    </div>
+                    <div class="relative pt-1">
+                      <div class="overflow-hidden h-1 text-xs flex rounded bg-green-200">
+                        <div v-bind:style="{width:channel.freq+'%'}"
+                            class="transition-all duration-500 shadow-none flex flex-col text-center
+                              whitespace-nowrap text-white justify-center bg-green-500"></div>
+                      </div>
                     </div>
                   </div>
                 </div>
