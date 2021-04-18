@@ -1,5 +1,3 @@
-import { DeviceMessage } from '@/definitions/device-message';
-import WebSocket from 'ws';
 import { DeviceValues } from '../definitions/device-values';
 import getDefaultConfig from '../utils/default-config';
 
@@ -53,6 +51,9 @@ export default class Device {
 
   public disconnect() {
     this.connected = false;
+    if (this.impulseTicker) {
+      clearTimeout(this.impulseTicker);
+    }
   }
 
   public toJSON() {
@@ -108,7 +109,7 @@ export default class Device {
 
   public onIoff() {
     this.hasImpulse = false;
-    if(this.impulseTicker) {
+    if (this.impulseTicker) {
       clearTimeout(this.impulseTicker);
     }
   }
@@ -118,28 +119,28 @@ export default class Device {
   }
 
   private startImpulseOn() {
-    if(this.impulseTicker) {
+    if (this.impulseTicker) {
       clearTimeout(this.impulseTicker);
     }
-    if(this.hasImpulse) {
-      this.impulseTicker = setTimeout(()=>{
+    if (this.hasImpulse) {
+      this.impulseTicker = setTimeout(() => {
         // Send ioff message to the app, start ioff timer
         this.impulseHandler.sendImpulseOff();
         this.startImpulseOff();
-      },this.deviceValues.time * 1000);
+      }, this.deviceValues.time * 1000);
     }
   }
 
   private startImpulseOff() {
-    if(this.impulseTicker) {
+    if (this.impulseTicker) {
       clearTimeout(this.impulseTicker);
     }
-    if(this.hasImpulse) {
-      this.impulseTicker = setTimeout(()=>{
+    if (this.hasImpulse) {
+      this.impulseTicker = setTimeout(() => {
         // Send ion message to the app, start ion timer
         this.impulseHandler.sendImpulseOn();
         this.startImpulseOn();
-      },this.deviceValues.pause * 1000);
+      }, this.deviceValues.pause * 1000);
     }
   }
 }
