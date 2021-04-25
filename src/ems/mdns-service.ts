@@ -3,12 +3,9 @@ import MDNS, { Advertisement } from 'mdns';
 export default class MdnsService {
   public static instance: MdnsService;
 
-  private advertisement: Advertisement;
+  private advertisement!: Advertisement;
 
   private started = false;
-
-  constructor() {
-  }
 
   public static getInstance() {
     if (!MdnsService.instance) {

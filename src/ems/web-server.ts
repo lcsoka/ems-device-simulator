@@ -16,11 +16,7 @@ export default class WebServer {
 
   private device!: Device;
 
-  private httpTerminator: HttpTerminator;
-
-  constructor() {
-    // this.app = express();
-  }
+  private httpTerminator!: HttpTerminator;
 
   public static getInstance() {
     if (!WebServer.instance) {

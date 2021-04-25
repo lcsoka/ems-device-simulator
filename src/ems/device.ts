@@ -18,7 +18,7 @@ export default class Device {
 
   private impulseTicker!: NodeJS.Timeout;
 
-  private impulseHandler: DeviceImpulseHandler;
+  private impulseHandler!: DeviceImpulseHandler;
 
   constructor(private serial: string) {
     this.deviceValues = {
