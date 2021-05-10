@@ -42,9 +42,14 @@ export default class WebsocketServer implements DeviceImpulseHandler {
     // @ts-ignore
     this.ws = new WebSocket.Server(config);
     this.ws.on('connection', (ws: WebSocket, socket: WebSocket, request: http.IncomingMessage) => {
-      this.addLog('Client connected. ✅');
       const device = WebServer.getInstance()
         .getDevice();
+
+      if (device.toJSON().connected) {
+        ws.close();
+        return;
+      }
+      this.addLog('Client connected. ✅');
       device.connect();
       device.setImpulseHandler(this);
       this.connectedClient = ws;
