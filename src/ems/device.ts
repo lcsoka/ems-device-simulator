@@ -1,6 +1,6 @@
 import { DeviceValues } from '../definitions/device-values';
 import getDefaultConfig from '../utils/default-config';
-
+import { DeviceImpulseHandler } from './device-impulse-handler';
 export default class Device {
   private battery = 100;
 

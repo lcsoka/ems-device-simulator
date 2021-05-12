@@ -3,6 +3,7 @@ import { Socket } from 'electron-ipc-socket';
 import * as http from 'http';
 import WebServer from './web-server';
 import { DeviceMessage } from '../definitions/device-message';
+import { DeviceImpulseHandler } from '@/ems/device-impulse-handler';
 
 export default class WebsocketServer implements DeviceImpulseHandler {
   private static instance: WebsocketServer;
